@@ -1,0 +1,122 @@
+<html>
+<title>Index page</title>
+
+<head>
+
+    <style>
+        #paper {
+            background: #fff;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="project/build/astrochart.js"></script>
+    <script>
+        // getFormData() needs form elements have attribute "name"
+        function getFormData($form) {
+            var unindexed_array = $form.serializeArray();
+            var indexed_array = {};
+
+            $.map(unindexed_array, function(n, i) {
+                indexed_array[n['name']] = n['value'];
+            });
+
+            return indexed_array;
+        }
+
+        $(document).ready(function() {
+
+            $("#address").blur(function() {
+                //alert("Address: " + theAddress);
+                $.get("https://api.geoapify.com/v1/geocode/search", { "text": $("#address").val(), "apiKey": "254b8bf200b949b59184a6f41a447d34" },
+                    function(data, status) {
+                        //alert("Data: " + JSON.stringify(data) + "\nStatus: " + status);
+                        if (status == "success") {
+                            $("#result").html("<p>Lat: " + data.features[0].properties.lat + ", Lon: " + data.features[0].properties.lon + "</p><br><pre>" + JSON.stringify(data, null, 4) + "</pre>");
+                            $("#latitude").val(data.features[0].properties.lat);
+                            $("#longitude").val(data.features[0].properties.lon);
+                        }
+                        else {
+                            alert("Error: " + status + "Fix the address: " + $("#address").val());
+                            $("#address").focus();
+                        }
+
+                    });
+            }); // function to populate address coordinates on blur
+
+            $("#uploadButton").click(function(e) {
+                //alert("hello");
+
+                var jsonArray = JSON.stringify($("#natalChart").serializeArray());
+                var jsonSerialize = JSON.stringify($("#natalChart").serialize());
+                var jsonObject = getFormData($("#natalChart"));
+                //var jsonObject = $("#natalChart").serialize();
+                $("#submittedRequestObject").empty().append(JSON.stringify(jsonObject));
+                $("#submittedRequestArray").empty().append(jsonArray);
+                $("#submittedRequestSerialize").empty().append(jsonSerialize);
+
+                $.post(
+                    "https://yxrrr4tgnh.execute-api.us-east-1.amazonaws.com/natalChart",
+                    //"https://ofvz8krka4.execute-api.us-east-1.amazonaws.com/test/natalchart",
+                    JSON.stringify(jsonObject),
+                    //JSON.stringify( $("#natalChart").serializeObject()), 
+                    //$("#natalChart").serializeArray(), 
+                    function(dataBack, status) {
+                        // ... do something with response from server
+                        alert("Status: " + status + "\n\nData: " + "<pre>" + JSON.stringify(dataBack, null, 4) + "</pre>");
+                        $("#uploadResponse").html("<pre>" + JSON.stringify(dataBack, null, 4) + "</pre>");
+                        $("#uploadResponseStatus").html(status);
+
+                        var chart = new astrology.Chart('paper', 600, 600);
+                        chart.radix(dataBack).aspects();
+                        $("#uploadResponseStatus").prepend(chart);
+                    },
+                    "json" // I expect a JSON response
+                );
+            }); // click
+        }); // ready
+    </script>
+</head>
+
+<body>
+    <h1>Natal Chart</h1>
+
+    <form id="natalChart">
+
+        <label for="name">Name:&nbsp;&nbsp</label>
+        <input type="text" id="name" name="name" value=""><br><br>
+
+        <label for="address">Address:&nbsp;&nbsp;</label>
+        <input type="text" id="address" name="address" value=""><br><br>
+        <input type="hidden" name="latitude" id="latitude" />
+        <input type="hidden" name="longitude" id="longitude" />
+        <p></p><span id="result"></span></p>
+
+        <label for="Month of Birth">Date of Birth:&nbsp;&nbsp;</label>
+        <input type="date" id="dateOfBrith" name="dateOfBrith">
+
+        <label for="timeOfBirth">&nbsp;&nbsp;Time of Birth:&nbsp;&nbsp;</label>
+        <input type="time" id="timeOfBirth" name="timeOfBirth" value="12:00:00"><br><br>
+
+
+        <input id="uploadButton" type="button" value="Submit" />
+
+    </form>
+
+    <br><br>
+    <h2>Submitted Request</h2>
+    <div id="submittedRequestObject"></div>
+    <br><br>
+    <div id="submittedRequestArray"></div>
+    <br><br>
+    <div id="submittedRequestSerialize"></div>
+
+    <br><br>
+    <br><br>
+    <p>Upload Response: <span id="uploadResponse"></span></p>
+    <p>Upload Response Status: <span id="uploadResponseStatus"></span></p>
+    <br><br>
+    <span id="natalChart"></span>
+</body>
+
+</html>
