@@ -1,1 +1,1 @@
-# natal-chart readme
+# natal-chart
