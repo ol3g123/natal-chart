@@ -1,4 +1,3 @@
-/* Decompiler 6ms, total 182ms, lines 32 */
 package example;
 
 import com.amazonaws.services.lambda.runtime.Context;

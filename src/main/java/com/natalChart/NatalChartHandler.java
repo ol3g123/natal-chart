@@ -11,7 +11,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 public class NatalChartHandler implements RequestHandler<Object, NatalChartResponse> {
    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
@@ -23,20 +22,33 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
       NatalChartRequest request = null;
       
       logger.log("Input EVENT class: " + event.getClass());
+      logger.log("RAW Input EVENT: " + event);
       logger.log("Input EVENT: " + GSON.toJson(event));
       
       if (event instanceof NatalChartRequest) {
           request = (NatalChartRequest) event;
       }
       else if (event instanceof LinkedHashMap) {
+         boolean found = false;
+         request = GSON.fromJson(GSON.toJson(event).toString(), NatalChartRequest.class);
+         if(request == null) {
           Map requestMap = (LinkedHashMap) event;
           for (Object k : requestMap.keySet()) {
               Object v = requestMap.get(k);
+              logger.log("key: " + k + "; value: " + v);
               if (k.equals("body")) {
                   request = GSON.fromJson(requestMap.get(k).toString(), NatalChartRequest.class);
+                  found = true;
                   break;
               }
           }
+          if(!found) {
+             error = "Received map does not have body header";
+          logger.log(error);
+         response.setError(error);
+         return response;
+          }
+         }
       }
       else {
           error = "Received object that is not instance of NatalChartRequest or Map. Object type is " + event.getClass().getName();
@@ -45,6 +57,12 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
          return response;
       }
       
+      if(request == null) {
+          error = "After gson transformation request is null";
+          logger.log(error);
+         response.setError(error);
+         return response;
+      }
       response = samplResponse(logger);
       return response;
    }
