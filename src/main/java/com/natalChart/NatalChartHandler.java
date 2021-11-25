@@ -11,6 +11,18 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.Optional;
+import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import cz.kibo.api.astrology.builder.PlanetBuilder;
+//import cz.kibo.api.astrology.domain.Coordinates;
+import cz.kibo.api.astrology.domain.Planet;
+
+import net.iakovlev.timeshape.TimeZoneEngine;
+
 public class NatalChartHandler implements RequestHandler<Object, NatalChartResponse> {
    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
@@ -67,6 +79,41 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
       return response;
    }
    
+   // engine to convert coordinates to time zone
+   private static final TimeZoneEngine engine = TimeZoneEngine.initialize();
+
+   private NatalChartResponse processRequest(NatalChartRequest request, NatalChartResponse response, LambdaLogger logger) {
+
+        if(request == null) {
+          String error = "After gson transformation request is null";
+          logger.log(error);
+         response.setError(error);
+         return response;
+      }
+
+        Optional<ZoneId> maybeZoneId = engine.query(request.getLatitude(), request.getLongitude());
+        logger.log("Latitude: " + request.getLatitude() + "; longitude: " + request.getLongitude() + "; time zone: " + maybeZoneId.get());
+
+        // "dateOfBrith":"1965-04-17","timeOfBirth":"12:00:00"
+        //LocalDateTime event = LocalDateTime.of( 2018, 3, 20, 16, 20);
+        LocalDateTime event = LocalDateTime.parse(request.getDateOfBrith() + ' ' + request.getTimeOfBirth(), formatter);
+        logger.log("Date and time of birth: " + event);
+        ZonedDateTime zonedEvent = event.atZone(maybeZoneId.get());
+        logger.log("Zoned Date and time of birth: " + zonedEvent);
+
+        double GEOALT = 0.0;
+        Planet ephemeris = new PlanetBuilder( event )
+							.planets()
+                            .topo(request.getLatitude(), request.getLongitude(), GEOALT)
+							.build();		
+		ephemeris.getPlanets().size();
+        logger.log("Planets: " + ephemeris);
+
+        return response;
+   }
+
+   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
    private NatalChartResponse samplResponse(LambdaLogger logger) {
        List<Double> cusps = Arrays.asList(265.6850555442075D, 307.6441825689919D, 353.38796689506074D,
                26.86890880306794D, 50.191811553503044D, 68.57049261566578D, 85.6850555442075D, 127.64418256899188D,
