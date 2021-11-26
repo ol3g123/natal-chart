@@ -1,9 +1,11 @@
 package com.natalChart;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -18,10 +20,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import cz.kibo.api.astrology.builder.PlanetBuilder;
-//import cz.kibo.api.astrology.domain.Coordinates;
+import cz.kibo.api.astrology.builder.CuspBuilder;
+import cz.kibo.api.astrology.domain.Cusp;
 import cz.kibo.api.astrology.domain.Planet;
 
 import net.iakovlev.timeshape.TimeZoneEngine;
+
 
 public class NatalChartHandler implements RequestHandler<Object, NatalChartResponse> {
    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
@@ -75,14 +79,16 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
          response.setError(error);
          return response;
       }
-      response = samplResponse(logger);
+      
+      processRequest(request, response, logger);
+      //response = samplResponse(logger);
       return response;
    }
    
    // engine to convert coordinates to time zone
    private static final TimeZoneEngine engine = TimeZoneEngine.initialize();
 
-   private NatalChartResponse processRequest(NatalChartRequest request, NatalChartResponse response, LambdaLogger logger) {
+   public NatalChartResponse processRequest(NatalChartRequest request, NatalChartResponse response, LambdaLogger logger) {
 
         if(request == null) {
           String error = "After gson transformation request is null";
@@ -100,15 +106,50 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
         logger.log("Date and time of birth: " + event);
         ZonedDateTime zonedEvent = event.atZone(maybeZoneId.get());
         logger.log("Zoned Date and time of birth: " + zonedEvent);
+        ZonedDateTime zonedEventUTC = zonedEvent.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime eventUTC = zonedEventUTC.toLocalDateTime();
+        logger.log("Date and UTC time of birth: " + event);
 
         double GEOALT = 0.0;
-        Planet ephemeris = new PlanetBuilder( event )
+        Planet ephemeris = new PlanetBuilder( eventUTC )
 							.planets()
                             .topo(request.getLatitude(), request.getLongitude(), GEOALT)
 							.build();		
 		ephemeris.getPlanets().size();
         logger.log("Planets: " + ephemeris);
+        
+        Map<String, List<Double>> data = new HashMap<String, List<Double>>();
+        
+        for (String planet : ephemeris.getPlanets().keySet()) {
+            List<Double> values = new ArrayList<Double>();
+			values.add(ephemeris.getPlanets().get(planet).get(0)); //longitude
+			//values.add(xp[3]); //speed in longitude
+			
+			data.put( planet, values);
+        }
+        
+        Planets thePlanets = (new Planets())
+                .setMoon(data.get("Moon"))
+               .setVenus(data.get("Venus")).
+               setJupiter(data.get("Jupiter"))
+               .setNNode(data.get("NNode")).
+               setMars(data.get("Mars"))
+               .setLilith(data.get("Lilith")).
+               setSaturn(data.get("Saturn"))
+               .setChiron(data.get("Chiron")).
+               setUranus(data.get("Uranus"))
+               .setSun(data.get("Sun")).
+               setMercury(data.get("Mercury"))
+               .setNeptune(data.get("Neptune")).
+               setPluto(data.get("Pluto"));
 
+
+        Cusp cusps = new CuspBuilder(eventUTC)
+						.houses("Placidus")
+						.topo(request.getLatitude(), request.getLongitude(), GEOALT)
+						.build();
+						
+		response.setCusps(cusps.getCusps()).setPlanets(thePlanets);				
         return response;
    }
 
