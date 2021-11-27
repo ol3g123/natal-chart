@@ -44,7 +44,7 @@ public class NatalChartHandlerTest {
 		
 		//JSONValue.escape(\"test string\");
 		String requestString = 
-		    "{ \"name\": \"John Doe\", \"address\": \"31166 Spruceberry Ct Wesley Chapel FL\", \"latitude\": \"10\", \"longitude\": \"-82\", \"dateOfBrith\": \"1965-04-17\", \"timeOfBirth\": \"15:00\" }";
+		    "{ \"name\": \"John Doe\", \"address\": \"31166 Spruceberry Ct Wesley Chapel FL\", \"latitude\": \"10\", \"longitude\": \"-82\", \"dateOfBrith\": \"1965-04-17\", \"timeOfBirth\": \"15:00:00\" }";
         NatalChartRequest request = GSON.fromJson(requestString, NatalChartRequest.class);
         
 		

@@ -149,12 +149,13 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
 						.topo(request.getLongitude(), request.getLatitude(), GEOALT)
 						.build();
 						
-		response.withCusps(cusps.getCusps()).withPlanets(thePlanets);		
+		response.withCusps(cusps.getCusps()).withPlanets(thePlanets);
+		logger.log(response.toString());
 		//response = samplResponse(logger);
         return response;
    }
 
-   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
    private NatalChartResponse samplResponse(LambdaLogger logger) {
        List<Double> cusps = Arrays.asList(265.6850555442075D, 307.6441825689919D, 353.38796689506074D,
