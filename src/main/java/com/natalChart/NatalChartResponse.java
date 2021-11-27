@@ -1,7 +1,6 @@
 package com.natalChart;
 
 import java.util.List;
-import javax.annotation.Generated;
 
 public class NatalChartResponse {
 
@@ -56,7 +55,7 @@ return this;
 @Override
 public String toString() {
 StringBuilder sb = new StringBuilder();
-sb.append(NatalChartResponse.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+sb.append("NatalChartResponse ").append('[');
 sb.append("planets");
 sb.append('=');
 sb.append(((this.planets == null)?"<null>":this.planets));

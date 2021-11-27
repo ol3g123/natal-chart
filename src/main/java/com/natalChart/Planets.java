@@ -1,7 +1,6 @@
 package com.natalChart;
 
 import java.util.List;
-import javax.annotation.Generated;
 
 public class Planets {
 
@@ -244,7 +243,7 @@ return this;
 @Override
 public String toString() {
 StringBuilder sb = new StringBuilder();
-sb.append(Planets.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+sb.append("Planets ").append('[');
 sb.append("moon");
 sb.append('=');
 sb.append(((this.moon == null)?"<null>":this.moon));

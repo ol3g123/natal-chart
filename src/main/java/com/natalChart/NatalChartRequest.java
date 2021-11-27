@@ -108,7 +108,7 @@ public class NatalChartRequest {
 
    public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append(NatalChartRequest.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+      sb.append("NatalChartRequest ").append('[');
       sb.append("name");
       sb.append('=');
       sb.append(this.name == null ? "<null>" : this.name);
@@ -119,11 +119,11 @@ public class NatalChartRequest {
       sb.append(',');
       sb.append("latitude");
       sb.append('=');
-      sb.append(this.latitude == null ? "<null>" : this.name);
+      sb.append(this.latitude == null ? "<null>" : this.latitude);
       sb.append(',');
       sb.append("longitude");
       sb.append('=');
-      sb.append(this.longitude == null ? "<null>" : this.name);
+      sb.append(this.longitude == null ? "<null>" : this.longitude);
       sb.append(',');
       sb.append("dateOfBrith");
       sb.append('=');

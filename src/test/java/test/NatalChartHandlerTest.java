@@ -44,12 +44,20 @@ public class NatalChartHandlerTest {
 		
 		//JSONValue.escape(\"test string\");
 		String requestString = 
-		    "{ \"name\": \"John Doe\", \"address\": \"31166 Spruceberry Ct Wesley Chapel FL\", \"latitude\": \"28.192604\", \"longitude\": \"-82.315557\", \"dateOfBrith\": \"1965-04-17\", \"timeOfBirth\": \"15:00\" }";
-		NatalChartRequest request = GSON.fromJson(requestString, NatalChartRequest.class);
+		    "{ \"name\": \"John Doe\", \"address\": \"31166 Spruceberry Ct Wesley Chapel FL\", \"latitude\": \"10\", \"longitude\": \"-82\", \"dateOfBrith\": \"1965-04-17\", \"timeOfBirth\": \"15:00\" }";
+        NatalChartRequest request = GSON.fromJson(requestString, NatalChartRequest.class);
+        
 		
-		NatalChartResponse response = new NatalChartResponse();
+        NatalChartResponse response = new NatalChartResponse();
+        System.out.println(request);
+        handler.processRequest(request, response, loggerMock);
 		
-	handler.processRequest(request, response, loggerMock);
+        // for(int i = -89; i <=89; i++) {
+        //     request.setLongitude(Double.valueOf(i));
+        //     System.out.println(request);
+        //     handler.processRequest(request, response, loggerMock);
+        //     System.out.println(response);
+        // }
 		
 		System.out.println(response);
 	}
