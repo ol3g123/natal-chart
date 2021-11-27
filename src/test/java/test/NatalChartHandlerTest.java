@@ -1,16 +1,8 @@
 package test;
 
-import static org.junit.Assert.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-
 import com.natalChart.*;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
