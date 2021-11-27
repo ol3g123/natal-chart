@@ -111,37 +111,37 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
         logger.log("Date and UTC time of birth: " + event);
 
         double GEOALT = 0.0;
-        Planet ephemeris = new PlanetBuilder( eventUTC )
-							.planets()
-                            .topo(request.getLatitude(), request.getLongitude(), GEOALT)
-							.build();		
-		ephemeris.getPlanets().size();
-        logger.log("Planets: " + ephemeris);
+//         Planet ephemeris = new PlanetBuilder( eventUTC )
+// 							.planets()
+//                             .topo(request.getLatitude(), request.getLongitude(), GEOALT)
+// 							.build();		
+// 		ephemeris.getPlanets().size();
+//         logger.log("Planets: " + ephemeris);
         
-        Map<String, List<Double>> data = new HashMap<String, List<Double>>();
+//         Map<String, List<Double>> data = new HashMap<String, List<Double>>();
         
-        for (String planet : ephemeris.getPlanets().keySet()) {
-            List<Double> values = new ArrayList<Double>();
-			values.add(ephemeris.getPlanets().get(planet).get(0)); //longitude
-			//values.add(xp[3]); //speed in longitude
+//         for (String planet : ephemeris.getPlanets().keySet()) {
+//             List<Double> values = new ArrayList<Double>();
+// 			values.add(ephemeris.getPlanets().get(planet).get(0)); //longitude
+// 			//values.add(xp[3]); //speed in longitude
 			
-			data.put( planet, values);
-        }
+// 			data.put( planet, values);
+//         }
         
-        Planets thePlanets = (new Planets())
-                .setMoon(data.get("Moon"))
-               .setVenus(data.get("Venus")).
-               setJupiter(data.get("Jupiter"))
-               .setNNode(data.get("NNode")).
-               setMars(data.get("Mars"))
-               .setLilith(data.get("Lilith")).
-               setSaturn(data.get("Saturn"))
-               .setChiron(data.get("Chiron")).
-               setUranus(data.get("Uranus"))
-               .setSun(data.get("Sun")).
-               setMercury(data.get("Mercury"))
-               .setNeptune(data.get("Neptune")).
-               setPluto(data.get("Pluto"));
+        // Planets thePlanets = (new Planets())
+        //         .setMoon(data.get("Moon"))
+        //       .setVenus(data.get("Venus")).
+        //       setJupiter(data.get("Jupiter"))
+        //       .setNNode(data.get("NNode")).
+        //       setMars(data.get("Mars"))
+        //       .setLilith(data.get("Lilith")).
+        //       setSaturn(data.get("Saturn"))
+        //       .setChiron(data.get("Chiron")).
+        //       setUranus(data.get("Uranus"))
+        //       .setSun(data.get("Sun")).
+        //       setMercury(data.get("Mercury"))
+        //       .setNeptune(data.get("Neptune")).
+        //       setPluto(data.get("Pluto"));
 
 
         Cusp cusps = new CuspBuilder(eventUTC)
@@ -149,7 +149,7 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
 						.topo(request.getLatitude(), request.getLongitude(), GEOALT)
 						.build();
 						
-		response.setCusps(cusps.getCusps()).setPlanets(thePlanets);				
+		//response.setCusps(cusps.getCusps()).setPlanets(thePlanets);				
         return response;
    }
 
