@@ -112,12 +112,13 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
             event = LocalDateTime.parse(request.getDateOfBrith() + ' ' + request.getTimeOfBirth(), formatHHmmss);
             logger.log("Format HH:mm failed. Did HH:mm:ss format");
         }
-        logger.log("Date and time of birth: " + event);
+        logger.log("LocalDateTime: " + event);
         ZonedDateTime zonedEvent = event.atZone(maybeZoneId.get());
-        logger.log("Zoned Date and time of birth: " + zonedEvent);
+        logger.log("ZonedDateTime: " + zonedEvent + " for zone: " + maybeZoneId.get());
         ZonedDateTime zonedEventUTC = zonedEvent.withZoneSameInstant(ZoneId.of("UTC"));
+        logger.log("ZonedDateTime: " + zonedEventUTC + " for zone UTC zone");
         LocalDateTime eventUTC = zonedEventUTC.toLocalDateTime();
-        logger.log("Date and UTC time of birth: " + event);
+        logger.log("LocalDateTime converted to UTC: " + eventUTC);
 
         double GEOALT = 0.0;
         Planet ephemeris = new PlanetBuilder( eventUTC )
