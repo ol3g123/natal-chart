@@ -18,6 +18,7 @@ import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import cz.kibo.api.astrology.builder.PlanetBuilder;
 import cz.kibo.api.astrology.builder.CuspBuilder;
@@ -102,7 +103,15 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
 
         // "dateOfBrith":"1965-04-17","timeOfBirth":"12:00:00"
         //LocalDateTime event = LocalDateTime.of( 2018, 3, 20, 16, 20);
-        LocalDateTime event = LocalDateTime.parse(request.getDateOfBrith() + ' ' + request.getTimeOfBirth(), formatter);
+        String timeString = request.getDateOfBrith() + ' ' + request.getTimeOfBirth();
+        LocalDateTime event;
+        try {
+            event = LocalDateTime.parse(request.getDateOfBrith() + ' ' + request.getTimeOfBirth(), formatHHmm);
+            logger.log("Did HH:mm format");
+        } catch(DateTimeParseException ex) {
+            event = LocalDateTime.parse(request.getDateOfBrith() + ' ' + request.getTimeOfBirth(), formatHHmmss);
+            logger.log("Format HH:mm failed. Did HH:mm:ss format");
+        }
         logger.log("Date and time of birth: " + event);
         ZonedDateTime zonedEvent = event.atZone(maybeZoneId.get());
         logger.log("Zoned Date and time of birth: " + zonedEvent);
@@ -155,7 +164,8 @@ public class NatalChartHandler implements RequestHandler<Object, NatalChartRespo
         return response;
    }
 
-   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+   private static final DateTimeFormatter formatHHmmss = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter formatHHmm = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
    private NatalChartResponse samplResponse(LambdaLogger logger) {
        List<Double> cusps = Arrays.asList(265.6850555442075D, 307.6441825689919D, 353.38796689506074D,
